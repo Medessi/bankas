@@ -1,0 +1,168 @@
+<html><head></head>
+<link rel="stylesheet" href="styles.css">
+
+<body>
+<div class="header">
+  <div class="header-icon">EG</div>
+  <div>Witaj, Elzbieto!</div>
+  <div class="search-icons">
+    <a onclick="toggleSearch()">🔍</a>
+    <a onclick="toggleSettings()">⚙️</a>
+  </div>
+</div>
+
+<div class="account-card">
+  <div class="account-label">Konto dla Ciebie</div>
+  <div class="account-number" id="accountNumber">93 1940 1076 6098 8109 000...</div>
+  <div>Dostepne pieniadze</div>
+  <div class="balance">
+    <span class="balance-amount" id="balanceAmount" onclick="toggleBalanceVisibility()">18,35 PLN</span>
+  </div>
+  <button class="transfer-button" onclick="showTransferModal()">Przelew</button>
+</div>
+
+<div class="menu-section">
+  <h3>Wymieniaj waluty</h3>
+  <h3>Bankuj szybko i bezpiecznie...</h3>
+  
+  <div class="partner-logos">
+    <div class="partner-logo" onclick="selectPartner(1)"></div>
+    <div class="partner-logo" onclick="selectPartner(2)"></div>
+    <div class="partner-logo" onclick="selectPartner(3)"></div>
+    <div class="partner-logo" onclick="selectPartner(4)"></div>
+  </div>
+</div>
+
+<div class="transactions">
+  <h3>Moje transakcje</h3>
+  <div class="transaction-item" onclick="showTransactionDetails(1)">
+    <div class="transaction-icon"></div>
+    <div>NETTO 4457...</div>
+    <div style="margin-left: auto">-6,09 PLN</div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item active">
+    <div class="nav-icon">🏠</div>
+    Start
+  </a>
+  <a href="platnosci.html" class="nav-item">
+    <div class="nav-icon">💳</div>
+    Platnosci
+  </a>
+  <a href="finanse.html" class="nav-item">
+    <div class="nav-icon">📊</div>
+    Finanse
+  </a>
+  <a href="majatek.html" class="nav-item">
+    <div class="nav-icon">💎</div>
+    Majatek
+  </a>
+  <a href="korzysci.html" class="nav-item">
+    <div class="nav-icon">🎁</div>
+    Korzysci
+  </a>
+</nav>
+
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal">
+  <div class="modal-content">
+    <h3>Nowy przelew</h3>
+    <form id="transferForm">
+      <div class="form-group">
+        <label>Numer konta odbiorcy</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>Kwota</label>
+        <input type="number" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label>Tytuł przelewu</label>
+        <input type="text" required>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" class="cancel" onclick="hideTransferModal()">Anuluj</button>
+        <button type="submit" class="confirm">Wykonaj przelew</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+let isBalanceHidden = false;
+let currentSection = 'start';
+
+function toggleBalanceVisibility() {
+  const balanceAmount = document.getElementById('balanceAmount');
+  isBalanceHidden = !isBalanceHidden;
+  balanceAmount.classList.toggle('hidden-balance');
+}
+
+function toggleSearch() {
+  // Implementation of search functionality
+  alert('Wyszukiwarka - funkcja w przygotowaniu');
+}
+
+function toggleSettings() {
+  // Implementation of settings functionality
+  alert('Ustawienia - funkcja w przygotowaniu');
+}
+
+function showTransferModal() {
+  const modal = document.getElementById('transferModal');
+  modal.style.display = 'flex';
+}
+
+function hideTransferModal() {
+  const modal = document.getElementById('transferModal');
+  modal.style.display = 'none';
+}
+
+function selectPartner(partnerId) {
+  // Implementation of partner selection
+  alert(`Wybrano partnera ${partnerId}`);
+}
+
+function showTransactionDetails(transactionId) {
+  // Implementation of transaction details view
+  alert(`Szczegóły transakcji ${transactionId}`);
+}
+
+function navigate(section) {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  document.querySelector(`[href="#${section}"]`).classList.add('active');
+  currentSection = section;
+  
+  // Handle section content change
+  // This would typically update the main content area
+  console.log(`Navigated to ${section}`);
+}
+
+// Handle transfer form submission
+document.getElementById('transferForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  // Implementation of transfer logic
+  alert('Przelew został wysłany');
+  hideTransferModal();
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('transferModal');
+  if (event.target === modal) {
+    hideTransferModal();
+  }
+}
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', () => {
+  // Any initialization code here
+  console.log('App initialized');
+});
+</script>
+
+</body></html>

@@ -1,0 +1,156 @@
+<html><head>
+<link rel="stylesheet" href="styles.css">
+
+</style>
+
+<body>
+<div class="header">
+  <div style="font-size: 20px; margin-right: 15px;">💎</div>
+  <div>Majątek</div>
+</div>
+
+<div class="wealth-summary">
+  <div style="opacity: 0.9">Całkowita wartość majątku</div>
+  <div class="total-value">127 450,00 PLN</div>
+  <div style="font-size: 12px; opacity: 0.8">Wzrost: +2,3% w tym miesiącu</div>
+</div>
+
+<div class="portfolio-chart">
+  <canvas id="portfolioChart"></canvas>
+</div>
+
+<div class="wealth-categories">
+  <h3>Struktura majątku</h3>
+  
+  <div class="category-item">
+    <div class="category-icon">🏦</div>
+    <div class="category-details">
+      <div class="category-name">Gotówka i lokaty</div>
+      <div class="category-value">45 320,00 PLN</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 35%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="category-item">
+    <div class="category-icon">📈</div>
+    <div class="category-details">
+      <div class="category-name">Inwestycje</div>
+      <div class="category-value">52 130,00 PLN</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 41%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="category-item">
+    <div class="category-icon">🏠</div>
+    <div class="category-details">
+      <div class="category-name">Nieruchomości</div>
+      <div class="category-value">30 000,00 PLN</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 24%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wealth-actions">
+  <h3>Zarządzaj majątkiem</h3>
+  <div class="action-grid">
+    <div class="action-item" onclick="handleAction('invest')">
+      <div class="action-icon">💰</div>
+      <div class="action-label">Inwestuj</div>
+    </div>
+    <div class="action-item" onclick="handleAction('analyze')">
+      <div class="action-icon">📊</div>
+      <div class="action-label">Analiza</div>
+    </div>
+    <div class="action-item" onclick="handleAction('optimize')">
+      <div class="action-icon">⚡</div>
+      <div class="action-label">Optymalizacja</div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    Start
+  </a>
+  <a href="platnosci.html" class="nav-item">
+    <div class="nav-icon">💳</div>
+    Platnosci
+  </a>
+  <a href="finanse.html" class="nav-item">
+    <div class="nav-icon">📊</div>
+    Finanse
+  </a>
+  <a href="majatek.html" class="nav-item active">
+    <div class="nav-icon">💎</div>
+    Majatek
+  </a>
+  <a href="korzysci.html" class="nav-item">
+    <div class="nav-icon">🎁</div>
+    Korzysci
+  </a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function handleAction(action) {
+  switch(action) {
+    case 'invest':
+      alert('Moduł inwestycyjny - funkcja w przygotowaniu');
+      break;
+    case 'analyze':
+      alert('Analiza portfela - funkcja w przygotowaniu');
+      break;
+    case 'optimize':
+      alert('Optymalizacja majątku - funkcja w przygotowaniu');
+      break;
+  }
+}
+
+function navigate(section) {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  document.querySelector(`[href="#${section}"]`).classList.add('active');
+  window.location.href = `#${section}`;
+}
+
+// Initialize portfolio chart
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('portfolioChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Gotówka i lokaty', 'Inwestycje', 'Nieruchomości'],
+      datasets: [{
+        data: [35, 41, 24],
+        backgroundColor: [
+          '#6b3cc9',
+          '#4a2b8c',
+          '#8b5cf6'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        }
+      }
+    }
+  });
+});
+</script>
+
+</body></html>

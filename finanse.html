@@ -1,0 +1,159 @@
+<html><head><link rel="stylesheet" href="styles.css">
+<body>
+<div class="header">
+  <div style="font-size: 20px; margin-right: 15px;">📊</div>
+  <div>Finanse</div>
+</div>
+
+<div class="balance-card">
+  <div class="balance-title">Dostępne środki</div>
+  <div class="balance-amount">18,35 PLN</div>
+  <div class="balance-details">Nr konta: 93 1940 1076 6098 8109 0000 0000</div>
+</div>
+
+<div class="chart-container">
+  <canvas id="spendingChart"></canvas>
+</div>
+
+<div class="finance-actions">
+  <h3>Zarządzaj finansami</h3>
+  <div class="action-grid">
+    <div class="action-item" onclick="handleAction('analysis')">
+      <div class="action-icon">📈</div>
+      <div class="action-label">Analiza</div>
+    </div>
+    <div class="action-item" onclick="handleAction('budget')">
+      <div class="action-icon">💰</div>
+      <div class="action-label">Budżet</div>
+    </div>
+    <div class="action-item" onclick="handleAction('goals')">
+      <div class="action-icon">🎯</div>
+      <div class="action-label">Cele</div>
+    </div>
+    <div class="action-item" onclick="handleAction('reports')">
+      <div class="action-icon">📊</div>
+      <div class="action-label">Raporty</div>
+    </div>
+  </div>
+</div>
+
+<div class="transactions">
+  <h3>Ostatnie transakcje</h3>
+  <div class="transaction-item">
+    <div class="transaction-icon">🛒</div>
+    <div class="transaction-details">
+      <div class="transaction-title">NETTO</div>
+      <div class="transaction-date">23.10.2024</div>
+    </div>
+    <div class="transaction-amount negative">-6,09 PLN</div>
+  </div>
+  <div class="transaction-item">
+    <div class="transaction-icon">🏪</div>
+    <div class="transaction-details">
+      <div class="transaction-title">Żabka</div>
+      <div class="transaction-date">22.10.2024</div>
+    </div>
+    <div class="transaction-amount negative">-15,49 PLN</div>
+  </div>
+  <div class="transaction-item">
+    <div class="transaction-icon">💳</div>
+    <div class="transaction-details">
+      <div class="transaction-title">Wpłata</div>
+      <div class="transaction-date">21.10.2024</div>
+    </div>
+    <div class="transaction-amount positive">+50,00 PLN</div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    Start
+  </a>
+  <a href="platnosci.html" class="nav-item">
+    <div class="nav-icon">💳</div>
+    Platnosci
+  </a>
+  <a href="finanse.html" class="nav-item active">
+    <div class="nav-icon">📊</div>
+    Finanse
+  </a>
+  <a href="majatek.html" class="nav-item">
+    <div class="nav-icon">💎</div>
+    Majatek
+  </a>
+  <a href="korzysci.html" class="nav-item">
+    <div class="nav-icon">🎁</div>
+    Korzysci
+  </a>
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function handleAction(action) {
+  switch(action) {
+    case 'analysis':
+      alert('Analiza finansowa - funkcja w przygotowaniu');
+      break;
+    case 'budget':
+      alert('Zarządzanie budżetem - funkcja w przygotowaniu');
+      break;
+    case 'goals':
+      alert('Cele finansowe - funkcja w przygotowaniu');
+      break;
+    case 'reports':
+      alert('Raporty finansowe - funkcja w przygotowaniu');
+      break;
+  }
+}
+
+function navigate(section) {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  document.querySelector(`[href="#${section}"]`).classList.add('active');
+  window.location.href = `#${section}`;
+}
+
+// Initialize spending chart
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('spendingChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Niedz'],
+      datasets: [{
+        label: 'Wydatki w PLN',
+        data: [25, 19, 32, 15, 22, 38, 21],
+        borderColor: '#50B748',
+        tension: 0.4,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: false
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+});
+</script>
+
+</body></html>

@@ -1,0 +1,372 @@
+<html><head>
+<link rel="stylesheet" href="styles.css">
+<body>
+    <div id="transferModal" class="modal">
+    <div class="modal-content">
+        <h3>Nouveau transfert</h3>
+        <form id="transferForm" onsubmit="handleTransfer(event)">
+            <div class="form-group">
+                <label class="form-label">Destinataire</label>
+                <input type="text" class="form-input" id="recipientInput" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Numéro de compte</label>
+                <input type="text" class="form-input" id="accountInput" required 
+                       pattern="\d{26}" title="26 chiffres requis">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Montant (PLN)</label>
+                <input type="number" class="form-input" id="amountInput" 
+                       min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Titre</label>
+                <input type="text" class="form-input" id="titleInput" required>
+            </div>
+            <button type="submit" class="form-button">Effectuer le transfert</button>
+        </form>
+    </div>
+</div>
+
+<div id="phoneTopupModal" class="modal">
+    <div class="modal-content">
+        <h3>Recharger le téléphone</h3>
+        <form id="topupForm" onsubmit="handlePhoneTopup(event)">
+            <div class="form-group">
+                <label class="form-label">Numéro de téléphone</label>
+                <input type="tel" class="form-input" id="phoneInput" required 
+                       pattern="\d{9}" title="9 chiffres requis">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Montant</label>
+                <select class="form-input" id="topupAmount" required>
+                    <option value="5">5 PLN</option>
+                    <option value="10">10 PLN</option>
+                    <option value="25">25 PLN</option>
+                    <option value="50">50 PLN</option>
+                    <option value="100">100 PLN</option>
+                </select>
+            </div>
+            <button type="submit" class="form-button">Recharger</button>
+        </form>
+    </div>
+</div>
+<div class="header">
+  <div style="font-size: 20px; margin-right: 15px;">📱</div>
+  <div>Płatności</div>
+</div>
+
+<div class="blik-section">
+  <h3>BLIK</h3>
+  <div class="blik-code" id="blikCode">------</div>
+  <div class="blik-timer" id="blikTimer"></div>
+  <button class="generate-blik" onclick="generateBlikCode()">Wygeneruj kod BLIK</button>
+</div>
+
+<div class="payments-grid">
+  <div class="payment-option" onclick="handlePaymentOption('przelew')">
+    <div class="payment-icon">💸</div>
+    <div class="payment-label">Przelew</div>
+  </div>
+  <div class="payment-option" onclick="handlePaymentOption('doladuj')">
+    <div class="payment-icon">📱</div>
+    <div class="payment-label">Doładuj telefon</div>
+  </div>
+  <div class="payment-option" onclick="handlePaymentOption('wymien')">
+    <div class="payment-icon">💱</div>
+    <div class="payment-label">Wymień walutę</div>
+  </div>
+  <div class="payment-option" onclick="handlePaymentOption('request')">
+    <div class="payment-icon">💰</div>
+    <div class="payment-label">Prośba o przelew</div>
+  </div>
+  <div class="payment-option" onclick="handlePaymentOption('mobile')">
+    <div class="payment-icon">📲</div>
+    <div class="payment-label">Płatności mobilne</div>
+  </div>
+  <div class="payment-option" onclick="handlePaymentOption('more')">
+    <div class="payment-icon">⋯</div>
+    <div class="payment-label">Więcej</div>
+  </div>
+</div>
+
+<div class="recent-payments">
+  <h3>Ostatnie płatności</h3>
+  <div class="recent-payment-item">
+    <div style="margin-right: 12px;">🛒</div>
+    <div>
+      <div>NETTO</div>
+      <div style="font-size: 12px; color: #666;">23.10.2024</div>
+    </div>
+    <div class="payment-amount">-6,09 PLN</div>
+  </div>
+  <div class="recent-payment-item">
+    <div style="margin-right: 12px;">🏪</div>
+    <div>
+      <div>Żabka</div>
+      <div style="font-size: 12px; color: #666;">22.10.2024</div>
+    </div>
+    <div class="payment-amount">-15,49 PLN</div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    Start
+  </a>
+  <a href="platnosci.html" class="nav-item active">
+    <div class="nav-icon">💳</div>
+    Platnosci
+  </a>
+  <a href="finanse.html" class="nav-item">
+    <div class="nav-icon">📊</div>
+    Finanse
+  </a>
+  <a href="majatek.html" class="nav-item">
+    <div class="nav-icon">💎</div>
+    Majatek
+  </a>
+  <a href="korzysci.html" class="nav-item">
+    <div class="nav-icon">🎁</div>
+    Korzysci
+  </a>
+</nav>
+
+
+<script>
+// État global de l'application
+const appState = {
+    balance: 1000.00,
+    transactions: [],
+    activeModals: new Set(),
+    currentUser: {
+        name: "Elzbieto",
+        accountNumber: "93 1940 1076 6098 8109 0000 0000"
+    }
+};
+
+// Gestionnaires de fonctionnalités
+class PaymentManager {
+    static async handleTransfer(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const amount = parseFloat(formData.get('amount'));
+        
+        try {
+            if (amount > appState.balance) {
+                throw new Error("Solde insuffisant");
+            }
+            
+            // Simuler une requête API
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            appState.balance -= amount;
+            appState.transactions.unshift({
+                type: 'transfer',
+                amount: -amount,
+                recipient: formData.get('recipient'),
+                date: new Date(),
+                title: formData.get('title')
+            });
+            
+            UIManager.showNotification('Transfert réussi', 'success');
+            UIManager.updateBalance();
+            UIManager.closeModal('transferModal');
+        } catch (error) {
+            UIManager.showNotification(error.message, 'error');
+        }
+    }
+    
+    static async handlePhoneTopup(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const amount = parseFloat(formData.get('amount'));
+        
+        try {
+            if (amount > appState.balance) {
+                throw new Error("Solde insuffisant");
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            appState.balance -= amount;
+            appState.transactions.unshift({
+                type: 'topup',
+                amount: -amount,
+                phone: formData.get('phone'),
+                date: new Date()
+            });
+            
+            UIManager.showNotification('Recharge réussie', 'success');
+            UIManager.updateBalance();
+            UIManager.closeModal('phoneTopupModal');
+        } catch (error) {
+            UIManager.showNotification(error.message, 'error');
+        }
+    }
+}
+
+// Gestionnaire d'interface utilisateur
+class UIManager {
+    static showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'block';
+        appState.activeModals.add(modalId);
+    }
+    
+    static closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'none';
+        appState.activeModals.delete(modalId);
+    }
+    
+    static showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = '1';
+        }, 100);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+    
+    static updateBalance() {
+        const balanceElement = document.getElementById('balance');
+        if (balanceElement) {
+            balanceElement.textContent = `${appState.balance.toFixed(2)} PLN`;
+        }
+    }
+    
+    static updateTransactionsList() {
+        const transactionsList = document.querySelector('.recent-payments');
+        if (!transactionsList) return;
+        
+        transactionsList.innerHTML = `
+            <h3>Dernières transactions</h3>
+            ${appState.transactions.slice(0, 5).map(transaction => `
+                <div class="recent-payment-item">
+                    <div style="margin-right: 12px;">
+                        ${transaction.type === 'transfer' ? '💸' : '📱'}
+                    </div>
+                    <div>
+                        <div>${transaction.type === 'transfer' ? transaction.recipient : 'Recharge téléphone'}</div>
+                        <div style="font-size: 12px; color: #666;">
+                            ${transaction.date.toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="payment-amount">${transaction.amount.toFixed(2)} PLN</div>
+                </div>
+            `).join('')}
+        `;
+    }
+}
+
+// Gestionnaire BLIK amélioré
+class BlikManager {
+    static generateCode() {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        const blikCodeElement = document.getElementById('blikCode');
+        const blikTimerElement = document.getElementById('blikTimer');
+        
+        if (blikCodeElement) {
+            blikCodeElement.textContent = code;
+        }
+        
+        // Gérer le compte à rebours
+        let timeLeft = 120;
+        const timer = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                if (blikCodeElement) blikCodeElement.textContent = '------';
+                if (blikTimerElement) blikTimerElement.textContent = 'Code expiré';
+                return;
+            }
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            if (blikTimerElement) {
+                blikTimerElement.textContent = 
+                    `Code valide pendant: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            timeLeft--;
+        }, 1000);
+        
+        // Simuler une validation BLIK
+        setTimeout(() => {
+            UIManager.showNotification('Code BLIK généré avec succès', 'success');
+        }, 500);
+    }
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Gestionnaire de clics global
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal')) {
+            UIManager.closeModal(event.target.id);
+        }
+    });
+    
+    // Initialisation
+    UIManager.updateBalance();
+    UIManager.updateTransactionsList();
+});
+
+// Gestionnaires d'événements pour les différentes fonctionnalités
+function handlePaymentOption(option) {
+    switch(option) {
+        case 'przelew':
+            UIManager.showModal('transferModal');
+            break;
+        case 'doladuj':
+            UIManager.showModal('phoneTopupModal');
+            break;
+        case 'wymien':
+            UIManager.showNotification('Fonction de change en développement', 'warning');
+            break;
+        case 'request':
+            UIManager.showNotification('Fonction de demande en développement', 'warning');
+            break;
+        case 'mobile':
+            UIManager.showNotification('Paiements mobiles en développement', 'warning');
+            break;
+        case 'more':
+            UIManager.showNotification('Plus d\'options bientôt disponibles', 'warning');
+            break;
+    }
+}
+
+function handleTransfer(event) {
+    PaymentManager.handleTransfer(event);
+}
+
+function handlePhoneTopup(event) {
+    PaymentManager.handlePhoneTopup(event);
+}
+
+function generateBlikCode() {
+    BlikManager.generateCode();
+}
+
+// Navigation
+function navigate(section) {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    const targetNav = document.querySelector(`[href="#${section}"]`);
+    if (targetNav) {
+        targetNav.classList.add('active');
+    }
+    window.location.href = `#${section}`;
+}
+</script>
+
+</body></html>

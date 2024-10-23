@@ -1,0 +1,143 @@
+<html><head>
+<link rel="stylesheet" href="styles.css">
+
+
+
+
+
+<body>
+<div class="header">
+  <div style="font-size: 20px; margin-right: 15px;">🎁</div>
+  <div>Korzyści</div>
+</div>
+
+<div class="benefits-card">
+  <div style="opacity: 0.9">Twoje punkty</div>
+  <div class="points-value">2,450</div>
+  <div style="font-size: 12px; opacity: 0.8">+150 punktów w tym miesiącu</div>
+</div>
+
+<div class="promo-banner" onclick="showPromoDetails()">
+  <div class="banner-icon">🔥</div>
+  <div class="banner-content">
+    <div class="banner-title">Specjalna promocja!</div>
+    <div class="banner-description">Zdobądź podwójne punkty za transakcje do końca miesiąca</div>
+  </div>
+</div>
+
+<div class="categories-tabs">
+  <div class="category-tab active" onclick="filterRewards('all')">Wszystkie</div>
+  <div class="category-tab" onclick="filterRewards('popular')">Popularne</div>
+  <div class="category-tab" onclick="filterRewards('new')">Nowości</div>
+  <div class="category-tab" onclick="filterRewards('exclusive')">Ekskluzywne</div>
+</div>
+
+<div class="rewards-section">
+  <div class="reward-item" onclick="claimReward('cashback')">
+    <div class="reward-icon">💰</div>
+    <div class="reward-details">
+      <div class="reward-title">50 PLN Cashback</div>
+      <div class="reward-description">Zwrot gotówki na konto</div>
+      <div class="points-needed">1000 punktów</div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 80%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reward-item" onclick="claimReward('voucher')">
+    <div class="reward-icon">🎫</div>
+    <div class="reward-details">
+      <div class="reward-title">Voucher Zakupowy</div>
+      <div class="reward-description">100 PLN do wykorzystania</div>
+      <div class="points-needed">2000 punktów</div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reward-item" onclick="claimReward('subscription')">
+    <div class="reward-icon">🎵</div>
+    <div class="reward-details">
+      <div class="reward-title">Premium Music</div>
+      <div class="reward-description">3 miesiące subskrypcji</div>
+      <div class="points-needed">3000 punktów</div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 40%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reward-item" onclick="claimReward('cinema')">
+    <div class="reward-icon">🎬</div>
+    <div class="reward-details">
+      <div class="reward-title">Bilety do kina</div>
+      <div class="reward-description">2 bilety w cenie 1</div>
+      <div class="points-needed">1500 punktów</div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 70%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    Start
+  </a>
+  <a href="platnosci.html" class="nav-item">
+    <div class="nav-icon">💳</div>
+    Platnosci
+  </a>
+  <a href="finanse.html" class="nav-item">
+    <div class="nav-icon">📊</div>
+    Finanse
+  </a>
+  <a href="majatek.html" class="nav-item">
+    <div class="nav-icon">💎</div>
+    Majatek
+  </a>
+  <a href="korzysci.html" class="nav-item active">
+    <div class="nav-icon">🎁</div>
+    Korzysci
+  </a>
+</nav>
+
+<script>
+function navigate(section) {
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => item.classList.remove('active'));
+  document.querySelector(`[href="#${section}"]`).classList.add('active');
+  window.location.href = `#${section}`;
+}
+
+function filterRewards(category) {
+  const tabs = document.querySelectorAll('.category-tab');
+  tabs.forEach(tab => tab.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Here you would normally filter the rewards based on category
+  console.log(`Filtering rewards by: ${category}`);
+}
+
+function claimReward(rewardType) {
+  // Here you would implement the reward claiming logic
+  alert(`Nagroda zostanie przyznana po potwierdzeniu. Typ: ${rewardType}`);
+}
+
+function showPromoDetails() {
+  alert('Szczegóły promocji: Zdobądź podwójne punkty za wszystkie transakcje kartą do końca miesiąca!');
+}
+</script>
+
+</body></html>
